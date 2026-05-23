@@ -27,6 +27,20 @@ rb_library(
     ],
 )
 
+_OS_SENSITIVE_TESTS = [
+    "action_builder_spec.rb",
+    "takes_screenshot_spec.rb",
+    "window_spec.rb",
+]
+
+_BIDI_TESTS = [
+    "bidi_spec.rb",
+    "navigation_spec.rb",
+    "network_spec.rb",
+]
+
+_DEVTOOLS_TESTS = ["devtools_spec.rb"]
+
 [
     rb_integration_test(
         name = file[:-8],
@@ -37,21 +51,20 @@ rb_library(
     )
     for file in glob(
         ["*_spec.rb"],
-        exclude = [
-            "bidi_spec.rb",
-            "driver_spec.rb",
-            "devtools_spec.rb",
-            "element_spec.rb",
-            "navigation_spec.rb",
-            "network_spec.rb",
-        ],
+        exclude = _OS_SENSITIVE_TESTS + _BIDI_TESTS + _DEVTOOLS_TESTS,
     )
 ]
 
-_BIDI_FILES = [
-    "bidi_spec.rb",
-    "navigation_spec.rb",
-    "network_spec.rb",
+[
+    rb_integration_test(
+        name = f[:-8],
+        srcs = [f],
+        tags = ["os-sensitive"],
+        deps = [
+            "//rb/lib/selenium/webdriver:common",
+        ],
+    )
+    for f in _OS_SENSITIVE_TESTS
 ]
 
 [
@@ -60,29 +73,20 @@ _BIDI_FILES = [
         srcs = [f],
         tags = ["bidi"],
         deps = [
-            "//rb/lib/selenium/devtools",
             "//rb/lib/selenium/webdriver:bidi",
         ],
     )
-    for f in _BIDI_FILES
+    for f in _BIDI_TESTS
 ]
 
-rb_integration_test(
-    name = "devtools",
-    srcs = ["devtools_spec.rb"],
-    tags = ["exclusive-if-local"],
-    deps = [
-        "//rb/lib/selenium/devtools",
-        "//rb/lib/selenium/webdriver:bidi",
-    ],
-)
-
-rb_integration_test(
-    name = "driver",
-    srcs = ["driver_spec.rb"],
-)
-
-rb_integration_test(
-    name = "element",
-    srcs = ["element_spec.rb"],
-)
+[
+    rb_integration_test(
+        name = f[:-8],
+        srcs = [f],
+        tags = ["exclusive-if-local"],
+        deps = [
+            "//rb/lib/selenium/devtools",
+        ],
+    )
+    for f in _DEVTOOLS_TESTS
+]

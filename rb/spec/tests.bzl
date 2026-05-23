@@ -130,10 +130,9 @@ BROWSERS = {
     "ie": {
         "data": [],
         "deps": ["//rb/lib/selenium/webdriver:ie"],
-        "tags": [
-            "skip-rbe",  # RBE is Linux-only.
-        ],
+        "tags": [],
         "target_compatible_with": ["@platforms//os:windows"],
+        "supports_bidi": False,
         "env": {
             "WD_REMOTE_BROWSER": "ie",
             "WD_SPEC_DRIVER": "ie",
@@ -144,9 +143,9 @@ BROWSERS = {
         "deps": ["//rb/lib/selenium/webdriver:safari"],
         "tags": [
             "exclusive-if-local",  # Safari cannot run in parallel.
-            "skip-rbe",  # RBE is Linux-only.
         ],
         "target_compatible_with": ["@platforms//os:macos"],
+        "supports_bidi": False,
         "env": {
             "WD_REMOTE_BROWSER": "safari",
             "WD_SPEC_DRIVER": "safari",
@@ -157,9 +156,9 @@ BROWSERS = {
         "deps": ["//rb/lib/selenium/webdriver:safari"],
         "tags": [
             "exclusive-if-local",  # Safari cannot run in parallel.
-            "skip-rbe",  # RBE is Linux-only.
         ],
         "target_compatible_with": ["@platforms//os:macos"],
+        "supports_bidi": False,
         "env": {
             "WD_REMOTE_BROWSER": "safari-preview",
             "WD_SPEC_DRIVER": "safari-preview",
@@ -169,8 +168,8 @@ BROWSERS = {
 
 DEFAULT_BROWSERS = [b for b in BROWSERS.keys() if b != "ie"]
 
-def rb_integration_test(name, srcs, deps = [], data = [], browsers = DEFAULT_BROWSERS, tags = []):
-    # Generate a library target that is used by //rb/spec:spec to expose all tests to //rb:lint.
+def rb_integration_test(name, srcs, deps = [], data = [], browsers = BROWSERS.keys(), tags = []):
+    # Generate a library target that is used by //rb/spec:spec to expose all tests to //rb:rubocop.
     rb_library(
         name = name,
         srcs = srcs,
@@ -217,7 +216,7 @@ def rb_integration_test(name, srcs, deps = [], data = [], browsers = DEFAULT_BRO
         )
 
         # Generate a test target for bidi browser execution if there is a matching tag
-        if "bidi" in tags:
+        if "bidi" in tags and BROWSERS[browser].get("supports_bidi", True):
             rb_test(
                 name = "{}-{}-bidi".format(name, browser),
                 size = "large",
@@ -245,7 +244,7 @@ def rb_unit_test(name, srcs, deps, data = [], flaky = False):
         flaky = flaky,
         main = "@bundle//bin:rspec",
         data = data,
-        tags = ["no-sandbox"],  # TODO: Do we need this?
+        tags = ["unit"],
         deps = ["//rb/spec/unit/selenium/webdriver:spec_helper"] + deps,
         visibility = ["//rb:__subpackages__"],
     )
