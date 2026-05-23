@@ -66,7 +66,7 @@ jobs:
       os: ${{ matrix.os }}
       rerun-with-debug: true
       run: >
-        bazel test
+        ./scripts/github-actions/bazel-test-if-targets.sh
         --keep_going
         --flaky_test_attempts 2
         --local_test_jobs 1
