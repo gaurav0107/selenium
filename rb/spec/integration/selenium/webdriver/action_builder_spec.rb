@@ -38,7 +38,7 @@ module Selenium
           expect(driver.find_element(id: 'result').text.strip).to be_empty
         end
 
-        it 'sends keys to element', only: {browser: %i[chrome edge firefox]} do
+        it 'sends keys to element' do
           driver.navigate.to url_for('formPage.html')
 
           input = driver.find_element(css: '#working')
@@ -159,7 +159,7 @@ module Selenium
         # https://issues.chromium.org/issues/400087471
         before { reset_driver! if GlobalTestEnv.rbe? && GlobalTestEnv.browser == :chrome }
 
-        it 'presses pointer twice', except: {browser: %i[safari safari_preview]} do
+        it 'presses pointer twice' do
           driver.navigate.to url_for('javascriptPage.html')
           element = driver.find_element(id: 'doubleClickField')
 
