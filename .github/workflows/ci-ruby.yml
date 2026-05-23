@@ -53,13 +53,13 @@ jobs:
         include:
           - os: ubuntu
             browser: yes
-            tag-filters: unit,os-sensitive,-lint
+            tag-filters: unit,os-sensitive
           - os: windows
             browser: yes
-            tag-filters: edge,edge-bidi,unit,os-sensitive,-lint
+            tag-filters: edge,edge-bidi,unit,os-sensitive
           - os: macos
             browser: safari
-            tag-filters: safari,unit,os-sensitive,-lint
+            tag-filters: safari,unit,os-sensitive
     with:
       name: ${{ matrix.os }}-tests
       browser: ${{ matrix.browser }}
